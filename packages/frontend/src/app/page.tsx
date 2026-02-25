@@ -2,6 +2,7 @@ import React from 'react';
 import './globals.css';
 import LottieHero from './components/LottieHero';
 import StorySection from './sections/StorySection';
+import WaitlistForm from './components/WaitlistForm';
 
 export default function Landing(){
   const lottieUrl = '/lottie/collab.json'; // placeholder, lazy loaded
