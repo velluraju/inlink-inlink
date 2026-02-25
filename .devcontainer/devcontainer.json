@@ -1,0 +1,19 @@
+{
+  "name": "Inlink Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": { "NODE_VERSION": "20" }
+  },
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ms-azuretools.vscode-docker"
+  ],
+  "forwardPorts": [3000],
+  "postCreateCommand": "pnpm install || npm install",
+  "remoteUser": "vscode"
+}
