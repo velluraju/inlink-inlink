@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  name        String?
+  accountType String
+  plan        String?  
+  commissionRate Float?
+  proExpiresAt DateTime?
+  verified    Boolean  @default(false)
+  verifiedAt  DateTime?
+  riskScore   Int      @default(0)
+  profileScore Int     @default(0)
+  walletBalance BigInt @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  socialChannels SocialChannel[]
+  verifications  Verification[]
+  sentDeals      Deal[] @relation("SenderDeals")
+  receivedDeals  Deal[] @relation("ReceiverDeals")
+  messages       Message[]
+}
+
+model SocialChannel {
+  id         String  @id @default(uuid())
+  user       User    @relation(fields: [userId], references: [id])
+  userId     String
+  platform   String
+  handle     String
+  followers  Int?
+  engagement Float?
+  avgLikes   Int?
+  avgComments Int?
+  autoFetched Boolean @default(false)
+  lastSyncedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Verification {
+  id           String   @id @default(uuid())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+  type         String
+  documentType String
+  documentUrl  String
+  selfieUrl    String?
+  status       String
+  confidenceScore Int?
+  aiDecision   String?
+  ocrData      Json?
+  faceMatchScore Int?
+  rejectionReason String?
+  fee          Int?
+  feePaid      Boolean @default(false)
+  paymentId    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Deal {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?
+  amountCents   Int
+  currency      String  @default("INR")
+  commissionRate Float?
+  commissionAmt Int?
+  status        String
+  promotionUrl  String?
+  promotionProof String?
+  reviewDeadline DateTime?
+  payoutAmount  Int?
+  payoutStatus  String?
+  paidFromWallet Boolean @default(false)
+  negotiatorId  String?
+  acceptorId    String?
+  sender        User    @relation("SenderDeals", fields: [senderId], references: [id])
+  senderId      String
+  receiver      User    @relation("ReceiverDeals", fields: [receiverId], references: [id])
+  receiverId    String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+}
+
+model Payment {
+  id           String   @id @default(uuid())
+  type         String
+  status       String
+  gateway      String
+  gatewayTxnId String?
+  amountCents  Int
+  currency     String @default("INR")
+  paymentMethod String?
+  gatewayResponse Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          String @id @default(uuid())
+  brand       User   @relation(fields: [brandId], references: [id])
+  brandId     String
+  name        String
+  category    String
+  verificationFee Int?
+  feePaid     Boolean @default(false)
+  status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+}
+
+model Campaign {
+  id           String @id @default(uuid())
+  brand        User   @relation(fields: [brandId], references: [id])
+  brandId      String
+  title        String
+  description  String?
+  budgetMin    Int?
+  budgetMax    Int?
+  platforms    String?
+  followerMin  Int?
+  followerMax  Int?
+  minEngagement Float?
+  deliverables Json?
+  deadline     DateTime?
+  requireVerified Boolean @default(false)
+  requirePro   Boolean @default(false)
+  niche        String?
+  location     String?
+  language     String?
+  status       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
+
+model WalletTransaction {
+  id          String @id @default(uuid())
+  user        User   @relation(fields: [userId], references: [id])
+  userId      String
+  type        String
+  amountCents Int
+  balanceAfter BigInt
+  referenceId String?
+  createdAt   DateTime @default(now())
+}
+
+model Message {
+  id          String @id @default(uuid())
+  deal        Deal   @relation(fields: [dealId], references: [id])
+  dealId      String
+  sender      User   @relation(fields: [senderId], references: [id])
+  senderId    String
+  content     String
+  type        String
+  read        Boolean @default(false)
+  flagged     Boolean @default(false)
+  riskScore   Int @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model AuditLog {
+  id          String @id @default(uuid())
+  action      String
+  entityType  String
+  entityId    String
+  details     Json?
+  performedBy String
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
