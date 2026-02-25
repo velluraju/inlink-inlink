@@ -16,13 +16,7 @@ export default function Landing(){
           <h1 className="title">InLink — Connect Brands with Verified Influencers</h1>
           <p className="subtitle">Trusted collaborations, secure escrow, AI-powered KYC — all in one place.</p>
           <div className="cta-row">
-            <input className="email-input" id="waitlist-email" placeholder="Enter your email for early access" />
-            <button className="btn-primary" onClick={async ()=>{
-              const email = (document.getElementById('waitlist-email') as HTMLInputElement).value;
-              if(!email) return alert('Enter email');
-              const res = await fetch('/api/waitlist', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({email,role:'brand'})});
-              if(res.ok) alert('Thanks — you are on the waitlist'); else alert('Error')
-            }}>Notify Me</button>
+            <WaitlistForm role="brand" />
           </div>
         </div>
         <div className="hero-parallax" aria-hidden>
@@ -58,13 +52,7 @@ export default function Landing(){
           <h2>Launching Soon — Join the Waitlist</h2>
           <p>Be among the first to try InLink. Early users get special benefits.</p>
           <div className="cta-row">
-            <input className="email-input" id="waitlist-email-2" placeholder="Your email address" />
-            <button className="btn-primary" onClick={async ()=>{
-              const email = (document.getElementById('waitlist-email-2') as HTMLInputElement).value;
-              if(!email) return alert('Enter email');
-              const res = await fetch('/api/waitlist', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({email,role:'influencer'})});
-              if(res.ok) alert('Thanks — you are on the waitlist'); else alert('Error')
-            }}>Get Early Access</button>
+            <WaitlistForm role="influencer" />
           </div>
         </section>
 
